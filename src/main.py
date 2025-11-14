@@ -69,17 +69,14 @@ document_processor = None
 async def startup_event():
     """Inicializa los servicios al arrancar la aplicación."""
     global vector_db, gemini_client, document_processor
-    
     try:
         print("Inicializando servicios...")
-        
         # Inicializar servicios
         #vector_db = VectorDatabase()
         gemini_client = GeminiClient()
         #document_processor = DocumentProcessor()
         
         print("✅ Servicios inicializados correctamente")
-        
     except Exception as e:
         print(f"❌ Error al inicializar servicios: {e}")
         raise
@@ -107,36 +104,29 @@ async def root():
         <div class="container">
             <h1>🤖 RAG Documentation System</h1>
             <p>Sistema de documentación basado en RAG (Retrieval-Augmented Generation) con Gemini y ChromaDB.</p>
-            
             <h2>📚 Endpoints Disponibles</h2>
-            
             <div class="endpoint">
                 <span class="method get">GET</span> <code>/health</code>
                 <p>Verifica el estado del sistema y sus componentes.</p>
             </div>
-            
             <div class="endpoint">
                 <span class="method get">GET</span> <code>/info</code>
                 <p>Información sobre la base de datos de documentos.</p>
             </div>
-            
             <div class="endpoint">
                 <span class="method post">POST</span> <code>/query</code>
                 <p>Realiza consultas sobre los documentos LLMs.</p>
                 <p><strong>Body:</strong> <code>{"question": "tu pregunta aquí"}</code></p>
             </div>
-            
             <div class="endpoint">
                 <span class="method post">POST</span> <code>/reload-documents</code>
                 <p>Recarga los documentos desde el archivo llms.txt.</p>
             </div>
-            
             <h2>🚀 Uso Rápido</h2>
             <p>Ejemplo de consulta:</p>
             <pre><code>curl -X POST "http://localhost:8000/query" \\
      -H "Content-Type: application/json" \\
      -d '{"question": "¿Qué son los LLMs?"}'</code></pre>
-            
             <h2>📖 Documentación</h2>
             <p>Visita <a href="/docs">/docs</a> para la documentación interactiva de Swagger.</p>
         </div>
@@ -157,19 +147,15 @@ async def health_check():
             "collection": db_info["name"],
             "documents": db_info["count"]
         }
-        
         # Verificar Gemini
         gemini_status = gemini_client.test_connection()
-        
         overall_status = "healthy" if db_status["connected"] and gemini_status["success"] else "unhealthy"
-        
         return HealthResponse(
             status=overall_status,
             message="Sistema funcionando correctamente" if overall_status == "healthy" else "Algunos servicios tienen problemas",
             database_status=db_status,
             gemini_status=gemini_status
         )
-        
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error en verificación de salud: {str(e)}")
 
@@ -195,19 +181,15 @@ async def query_documents(request: QueryRequest):
         question = request.question.strip()
         if not question:
             raise HTTPException(status_code=400, detail="La pregunta no puede estar vacía")
-        
         # Buscar documentos relevantes
         search_results = vector_db.search_similar_documents(
             query=question, 
             n_results=request.max_results
         )
-        
         # Preparar documentos de contexto para Gemini
         context_documents = search_results.get("documents", [])
-        
         # Generar respuesta con Gemini
         answer = gemini_client.generate_response(question, context_documents)
-        
         # Preparar información de fuentes
         sources = []
         for i, (doc, metadata, distance) in enumerate(zip(
@@ -223,17 +205,14 @@ async def query_documents(request: QueryRequest):
                 "similarity_score": float(1 - distance),  # Convertir distancia a similarity
                 "tokens": metadata.get("tokens", 0)
             })
-        
         # Generar preguntas de seguimiento
         follow_up_questions = gemini_client.suggest_follow_up_questions(question, context_documents)
-        
         return QueryResponse(
             question=question,
             answer=answer,
             sources=sources,
             follow_up_questions=follow_up_questions
         )
-        
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al procesar consulta: {str(e)}")
 
@@ -248,29 +227,22 @@ async def reload_documents():
                 status_code=404, 
                 detail=f"Archivo {Config.LLMS_FILE_PATH} no encontrado"
             )
-        
         # Limpiar colección actual
         vector_db.clear_collection()
-        
         # Procesar documentos
         chunks = document_processor.process_llms_file()
-        
         # Añadir a la base de datos vectorial
         success = vector_db.add_documents(chunks)
-        
         if not success:
             raise HTTPException(status_code=500, detail="Error al cargar documentos en la base de datos")
-        
         # Obtener información actualizada
         info = vector_db.get_collection_info()
-        
         return {
             "message": "Documentos recargados exitosamente",
             "total_chunks": len(chunks),
             "collection_documents": info["count"],
             "file_path": Config.LLMS_FILE_PATH
         }
-        
     except HTTPException:
         raise
     except Exception as e:
@@ -286,10 +258,8 @@ async def search_documents(
     try:
         if not q.strip():
             raise HTTPException(status_code=400, detail="La consulta no puede estar vacía")
-        
         # Buscar documentos
         results = vector_db.search_similar_documents(query=q, n_results=limit)
-        
         # Formatear resultados
         formatted_results = []
         for i, (doc, metadata, distance) in enumerate(zip(
@@ -303,13 +273,11 @@ async def search_documents(
                 "metadata": metadata,
                 "similarity_score": float(1 - distance)
             })
-        
         return {
             "query": q,
             "total_results": len(formatted_results),
             "results": formatted_results
         }
-        
     except HTTPException:
         raise
     except Exception as e:
@@ -320,7 +288,6 @@ if __name__ == "__main__":
     print("🚀 Iniciando servidor RAG Documentation System...")
     print(f"📍 URL: http://{Config.HOST}:{Config.PORT}")
     print(f"📚 Documentación: http://{Config.HOST}:{Config.PORT}/docs")
-    
     uvicorn.run(
         "main:app",
         host=Config.HOST,
