@@ -15,7 +15,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 #from vector_database import VectorDatabase
 from gemini_client import GeminiClient
-#from document_processor import DocumentProcessor
+from document_processor import DocumentProcessor
 from config.settings import Config
 
 
@@ -74,8 +74,7 @@ async def startup_event():
         # Inicializar servicios
         #vector_db = VectorDatabase()
         gemini_client = GeminiClient()
-        #document_processor = DocumentProcessor()
-        
+        document_processor = DocumentProcessor()
         print("✅ Servicios inicializados correctamente")
     except Exception as e:
         print(f"❌ Error al inicializar servicios: {e}")
