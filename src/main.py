@@ -13,7 +13,7 @@ import sys
 # Añadir el directorio padre al path para imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-#from vector_database import VectorDatabase
+from vector_database import VectorDatabase
 from gemini_client import GeminiClient
 from document_processor import DocumentProcessor
 from config.settings import Config
@@ -72,7 +72,7 @@ async def startup_event():
     try:
         print("Inicializando servicios...")
         # Inicializar servicios
-        #vector_db = VectorDatabase()
+        vector_db = VectorDatabase()
         gemini_client = GeminiClient()
         document_processor = DocumentProcessor()
         print("✅ Servicios inicializados correctamente")
@@ -140,7 +140,7 @@ async def health_check():
     """Verifica el estado de salud del sistema."""
     try:
         # Verificar base de datos vectorial
-        db_info = {'name':'TEST', 'count': 0} #vector_db.get_collection_info()
+        db_info = vector_db.get_collection_info()
         db_status = {
             "connected": True,
             "collection": db_info["name"],
@@ -163,7 +163,7 @@ async def health_check():
 async def get_info():
     """Obtiene información sobre la base de datos de documentos."""
     try:
-        info = {'name':'TEST', 'count': 0, 'embedding_model': 'all-MiniLM-L6-v2----test'} #vector_db.get_collection_info()
+        info = vector_db.get_collection_info()
         return DocumentInfo(
             collection_name=info["name"],
             total_documents=info["count"],
@@ -182,7 +182,6 @@ async def query_documents(request: QueryRequest):
             raise HTTPException(status_code=400, detail="La pregunta no puede estar vacía")
         # Buscar documentos relevantes
         search_results = vector_db.search_similar_documents(
-            query=question, 
             n_results=request.max_results
         )
         # Preparar documentos de contexto para Gemini
@@ -223,7 +222,6 @@ async def reload_documents():
         # Verificar que el archivo existe
         if not os.path.exists(Config.LLMS_FILE_PATH):
             raise HTTPException(
-                status_code=404, 
                 detail=f"Archivo {Config.LLMS_FILE_PATH} no encontrado"
             )
         # Limpiar colección actual
