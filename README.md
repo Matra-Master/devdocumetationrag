@@ -21,7 +21,7 @@ Sistema de documentación basado en RAG (Retrieval-Augmented Generation) que uti
          │                       │                       │
          ▼                       ▼                       ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                     FastAPI Server                             │
+│                     FastAPI Server                              │
 │  ┌─────────────┐ ┌──────────────┐ ┌─────────────────────────┐   │
 │  │ Document    │ │ Vector       │ │ Gemini Client           │   │
 │  │ Processor   │ │ Database     │ │ (RAG + Response Gen)    │   │
@@ -73,7 +73,7 @@ GOOGLE_API_KEY=tu_api_key_aqui
 
 #### Obtener API Key de Google Gemini
 
-1. Ve a [Google AI Studio](https://makersuite.google.com/app/apikey)
+1. Ve a [Google AI Studio](https://aistudio.google.com/app/apikey)
 2. Crea una nueva API key
 3. Copia la clave y pégala en tu archivo `.env`
 
