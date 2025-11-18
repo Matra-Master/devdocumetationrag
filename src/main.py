@@ -182,6 +182,7 @@ async def query_documents(request: QueryRequest):
             raise HTTPException(status_code=400, detail="La pregunta no puede estar vacía")
         # Buscar documentos relevantes
         search_results = vector_db.search_similar_documents(
+            query=question,
             n_results=request.max_results
         )
         # Preparar documentos de contexto para Gemini
