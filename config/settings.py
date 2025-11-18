@@ -24,4 +24,4 @@ class Config:
     TEMPERATURE = float(os.getenv("TEMPERATURE", 0.7))
     # File paths
     DATA_DIR = "data"
-    LLMS_FILE_PATH = os.path.join(DATA_DIR, "llms.txt")
+    LLMS_FILE_PATH = os.path.join(DATA_DIR, "llms-full.txt")
