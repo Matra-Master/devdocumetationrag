@@ -32,39 +32,33 @@ curl -s http://localhost:8000/health | jq
 
 ---
 
-# Live Demo: Ask a Question
+# Demo: Preguntar a la documentación
 
 ```bash
 curl -s -X POST http://localhost:8000/query \
   -H "Content-Type: application/json" \
-  -d '{"question": "What are LLMs?", "max_results": 3}' \
+  -d '{"question": "How can I link between pages?", "max_results": 3}' \
   | jq --indent 5 '.answer, .sources[0].similarity_score'
 ```
 
 ---
 
-# Live Demo: Semantic Search
+# Stack
 
-```bash
-curl -s "http://localhost:8000/search?q=transformer%20architecture&limit=2" \
-  | jq '.results[] | {rank, similarity_score, preview: .content[:100]}'
-```
-
----
-
-# Tech Stack
-
-- **FastAPI** - REST API framework
-- **ChromaDB** - Vector database
-- **Google Gemini** - LLM inference
+- **FastAPI** - API framework (Python)
+- **ChromaDB** - DB Vectorial
+- **Google Gemini** - Modelo de inferencia
 - **Sentence Transformers** - Embeddings
-- **llms.txt** - Documentation format
+- **llms.txt** - Formato de documentación
+- **Swagger** - Documentación de la documentación
 
 ---
 
 # Thank You!
 
-**Questions?**
+Las aplicaciones posibles de esto son:
 
-Repository: github.com/yourusername/devdocumetationrag
-Docs: http://localhost:8000/docs
+- Servir un API para que otros se hagan un frontend
+- Sumarlo a un IDE para que se le pueda preguntar sobre documentación.
+- La implementación es lo suficientemente general como para usar otra cosa en vez de `llms.txt`
+
